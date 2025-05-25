@@ -1,19 +1,19 @@
-# api_gateway/infrastructure/config.py
-
-from pydantic import AnyHttpUrl
+# file_storing_service/infrastructure/config.py
+import os
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
-    FILE_SERVICE_URL: AnyHttpUrl
-    APP_HOST: str = "0.0.0.0"
-    APP_PORT: int = 80
-    DATABASE_URL: str  # e.g. postgresql://user:pass@localhost:5432/files
+    # URL для подключения к БД
+    DATABASE_URL: str
+    # Куда сохранять файлы на диске
     STORAGE_PATH: str = "./data"
 
     class Config:
-        env_file = ".env"
+        # файл с переменными окружения лежит рядом с этим модулем
+
+        env_file = os.path.join("file_storing_service", ".env")
         env_file_encoding = "utf-8"
 
-
+# единственный экземпляр настроек
 settings = Settings()
+

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .entities import FileEntity
+from file_storing_service.domain.entities import FileEntity
 
 
 class FileRepository(ABC):

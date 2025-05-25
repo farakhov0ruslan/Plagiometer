@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from ..dtos import GetFileResponse
-from ...domain.repositories import FileRepository
-from ..ports.storage_port import StorageGateway
+from file_storing_service.application.dtos import GetFileResponse
+from file_storing_service.domain.repositories import FileRepository
+from file_storing_service.application.ports.storage_port import StorageGateway
 
 
 class GetFile:

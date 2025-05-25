@@ -4,5 +4,7 @@ httpx
 python-multipart
 sqlalchemy
 pydantic-settings
-
+psycopg2-binary
+psycopg2
+python-multipart
 

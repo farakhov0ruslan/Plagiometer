@@ -1,12 +1,23 @@
-#api-gataeway/Dockerfile
 FROM python:3.11-slim
 
-# 2. Установка зависимостей
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Системные зависимости для Postgres и сборки
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends gcc libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
 
-COPY ../api_gateway .
-# 4. Порт и запуск приложения
+# Рабочая директория
+WORKDIR /app
+ENV PYTHONPATH=/app
+
+# Зависимости Python
+COPY requirements.txt .
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt
+
+# Копируем весь код сразу в /app/file_analysis_service
+COPY . /app/file_analysis_service
+RUN mkdir -p data
+# Порт и точка входа
 EXPOSE 80
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "file_analysis_service.main:app", "--host", "0.0.0.0", "--port", "80"]
+

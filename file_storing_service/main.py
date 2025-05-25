@@ -1,7 +1,8 @@
-# file_storing_service/main.py
-
+import os
 from fastapi import FastAPI
-from .presentation.controllers.file_controller import router as file_router
+from file_storing_service.presentation.controllers.file_controller import router as file_router
+
+os.makedirs("data", exist_ok=True)
 
 app = FastAPI(
     title="File Storing Service",

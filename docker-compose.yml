@@ -1,32 +1,87 @@
+version: '3.8'
+
 services:
   api_gateway:
     build: ./api_gateway
+    container_name: api_gateway
     ports:
-      - "8000:80"
+      - "8000:80"                    # доступен снаружи
     environment:
-      - FILE_SERVICE_URL=http://file_service:80/api
+      - FILE_SERVICE_URL=http://file_service:80
+      - ANALYSIS_SERVICE_URL=http://file_analysis_service:80
     depends_on:
       - file_service
+      - file_analysis_service
+    networks:
+      - frontend
+      - backend
 
   file_service:
     build: ./file_storing_service
     container_name: file_service
-    ports:
-      - "8001:80"
+    # не пробрасываем порт наружу, только внутри Docker-сети
+    expose:
+      - "80"
     environment:
       - DATABASE_URL=postgresql://user:pass@file_db:5432/files
     depends_on:
       - file_db
+    networks:
+      - backend
+    volumes:
+      - file_db_data:/var/lib/postgresql/data
+      - file_service_data:/app/data
 
   file_db:
     image: postgres:15
     container_name: file_db
+    expose:
+      - "5432"
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: files
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=files
     volumes:
       - file_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  file_analysis_service:
+    build: ./file_analysis_service
+    container_name: file_analysis_service
+    expose:
+      - "80"
+    env_file:
+      - ./file_analysis_service/.env
+    depends_on:
+      - file_service
+      - file_analysis_db
+    networks:
+      - backend
+    volumes:
+      - file_analysis_db_data:/var/lib/postgresql/data
+      - file_analysis_service_data:/app/data
+
+  file_analysis_db:
+    image: postgres:15
+    container_name: file_analysis_db
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=analysis
+    volumes:
+      - file_analysis_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
 volumes:
   file_db_data:
+  file_analysis_db_data:
+  file_service_data:
+  file_analysis_service_data:
+
+networks:
+  frontend: {}
+  backend: {}

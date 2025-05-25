@@ -1,6 +1,6 @@
 import os
 from file_storing_service.application.ports.storage_port import StorageGateway
-from api_gateway.infrastructure.config import settings
+from file_storing_service.infrastructure.config import settings
 
 
 class FileSystemStorage(StorageGateway):
